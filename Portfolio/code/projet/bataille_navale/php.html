@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algorithmie PHP — Bataille Navale</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="php.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">// Algorithmie PHP</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('game')">🎯 Bataille Navale</button>
+    <button class="tab" onclick="switchTab('exos')">📊 Exercices</button>
+    <button class="tab" onclick="switchTab('about')">ℹ️ À propos</button>
+  </div>
+</header>
+
+<!-- ══ BATAILLE NAVALE ══ -->
+<div class="page active" id="page-game">
+  <div class="game-header">
+    <div class="game-title">🚢 Bataille Navale</div>
+    <div class="game-status" id="status-text">Phase de placement</div>
+  </div>
+
+  <div class="game-layout">
+
+    <!-- GRILLE JOUEUR -->
+    <div class="board-wrap">
+      <div class="board-label" id="player-label">Votre flotte — Placez vos navires</div>
+      <div class="col-labels" id="player-col-labels"></div>
+      <div class="grid-container">
+        <div class="grid-labels" id="player-row-labels"></div>
+        <div class="grid" id="player-grid"></div>
+      </div>
+    </div>
+
+    <!-- GRILLE ENNEMIE / SETUP -->
+    <div class="board-wrap" id="right-panel">
+      <!-- pendant placement -->
+      <div id="setup-panel-wrap">
+        <div class="board-label">Navires à placer</div>
+        <div class="setup-panel">
+          <div class="setup-title">Sélectionnez un navire, puis cliquez sur la grille</div>
+          <div class="ship-list" id="ship-list"></div>
+          <div class="setup-title" style="margin-top:0.5rem;">Orientation</div>
+          <div class="orientation-toggle">
+            <button class="orient-btn active" id="btn-h" onclick="setOrient('H')">→ Horizontal</button>
+            <button class="orient-btn" id="btn-v" onclick="setOrient('V')">↓ Vertical</button>
+          </div>
+          <button class="btn btn-outline btn-full" onclick="resetPlacement()">🔄 Recommencer</button>
+          <button class="btn btn-accent btn-full" id="start-btn" disabled onclick="startGame()">▶ Lancer la partie</button>
+        </div>
+      </div>
+      <!-- pendant jeu -->
+      <div id="enemy-panel-wrap" style="display:none;">
+        <div class="board-label">Zone ennemie — Cliquez pour tirer !</div>
+        <div class="col-labels" id="enemy-col-labels"></div>
+        <div class="grid-container">
+          <div class="grid-labels" id="enemy-row-labels"></div>
+          <div class="grid" id="enemy-grid"></div>
+        </div>
+        <div style="margin-top:1rem;">
+          <div class="board-label" style="margin-bottom:0.5rem;">Journal de combat</div>
+          <div class="log-wrap" id="game-log"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ EXERCICES ══ -->
+<div class="page" id="page-exos">
+  <h2 style="font-family:'Space Mono',monospace;font-size:1.1rem;color:#fff;margin-bottom:1.5rem;">Exercices d'algorithmique</h2>
+
+  <!-- NOTES -->
+  <div class="exo-card">
+    <div class="exo-title">// Exercice — Calcul de notes (min, max, moyenne)</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Entrez jusqu'à 5 notes, puis calculez les statistiques.</p>
+    <div class="exo-form">
+      <input class="exo-input" id="n1" type="number" min="0" max="20" placeholder="Note 1">
+      <input class="exo-input" id="n2" type="number" min="0" max="20" placeholder="Note 2">
+      <input class="exo-input" id="n3" type="number" min="0" max="20" placeholder="Note 3">
+      <input class="exo-input" id="n4" type="number" min="0" max="20" placeholder="Note 4">
+      <input class="exo-input" id="n5" type="number" min="0" max="20" placeholder="Note 5">
+      <button class="btn btn-accent" onclick="calcNotes()">Calculer</button>
+    </div>
+    <div class="exo-result" id="res-notes">// Résultat ici...</div>
+  </div>
+
+  <!-- MONNAIE -->
+  <div class="exo-card">
+    <div class="exo-title">// Exercice — Rendu de monnaie</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Entrez le montant total et le montant versé.</p>
+    <div class="exo-form">
+      <div>
+        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Montant total (€)</label>
+        <input class="exo-input" id="total-prix" type="number" min="0" step="0.01" placeholder="ex: 17.50">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Montant versé (€)</label>
+        <input class="exo-input" id="montant-verse" type="number" min="0" step="0.01" placeholder="ex: 20.00">
+      </div>
+      <button class="btn btn-accent" onclick="calcMonnaie()">Calculer</button>
+    </div>
+    <div class="exo-result" id="res-monnaie">// Résultat ici...</div>
+  </div>
+
+  <!-- TABLEAU -->
+  <div class="exo-card">
+    <div class="exo-title">// Exercice — Affichage de tableau / matrice</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Génère et affiche une matrice N×N avec des valeurs aléatoires.</p>
+    <div class="exo-form">
+      <div>
+        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Taille N</label>
+        <input class="exo-input" id="mat-size" type="number" min="2" max="8" value="4" style="width:80px;">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Valeur max</label>
+        <input class="exo-input" id="mat-max" type="number" min="1" max="99" value="9" style="width:80px;">
+      </div>
+      <button class="btn btn-accent" onclick="genMatrix()">Générer</button>
+    </div>
+    <div class="exo-result" id="res-matrix">// Résultat ici...</div>
+  </div>
+</div>
+
+<!-- ══ À PROPOS ══ -->
+<div class="page" id="page-about">
+  <div style="max-width:600px;">
+    <h2 style="font-family:'Space Mono',monospace;font-size:1.1rem;color:#fff;margin-bottom:1.5rem;">À propos du projet</h2>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.5rem;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+      <p>Exercices d'algorithmique réalisés en <strong style="color:var(--text)">PHP CLI</strong> dans le cadre du cours BTS SIO.</p>
+      <br>
+      <p>Le projet principal est une <strong style="color:var(--text)">Bataille Navale</strong> en PHP pur :</p>
+      <ul style="margin-left:1.5rem;margin-top:0.5rem;">
+        <li>Grille 10×10 initialisée avec des zéros</li>
+        <li>Placement interactif des navires (horizontal/vertical)</li>
+        <li>Vérification des collisions et dépassements</li>
+        <li>Affichage via <code style="color:var(--accent2)">affichetab()</code></li>
+      </ul>
+      <br>
+      <p>D'autres exercices couvrent la logique conditionnelle, les boucles, les tableaux et le calcul numérique.</p>
+      <br>
+      <p style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent);">Techno : PHP 8.1 · CLI · Algorithmique pure</p>
+    </div>
+    <div style="margin-top:1rem;">
+      <a href="../index.html#projets" style="color:var(--accent);font-size:0.85rem;text-decoration:none;">← Retour au portfolio</a>
+    </div>
+  </div>
+</div>
+
+<!-- WIN OVERLAY -->
+<div class="overlay" id="win-overlay">
+  <div class="win-box">
+    <div class="win-emoji" id="win-emoji">🏆</div>
+    <div class="win-title" id="win-title">Victoire !</div>
+    <div class="win-sub" id="win-sub"></div>
+    <button class="btn btn-accent btn-full" onclick="restartGame()">▶ Rejouer</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════
+function switchTab(t) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + t).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ════════════════════════════════════════
+// BATAILLE NAVALE
+// ════════════════════════════════════════
+const SHIPS = [
+  { name:'Porte-avion', size:5, id:'pa' },
+  { name:'Croiseur',    size:4, id:'cr' },
+  { name:'Sous-marin 1',size:3, id:'s1' },
+  { name:'Sous-marin 2',size:3, id:'s2' },
+  { name:'Torpilleur',  size:2, id:'tp' },
+];
+const COLS = 'ABCDEFGHIJ'.split('');
+const ROWS = Array.from({length:10},(_,i)=>i+1);
+
+let playerGrid = [];   // 0=water, 'shipId'=navire
+let enemyGrid  = [];   // 0=water, 'ship'=navire (caché)
+let playerShots= [];   // {r,c,hit}
+let enemyShots = [];   // {r,c,hit}
+let placedShips= {};   // shipId -> [{r,c}]
+let selectedShip = null;
+let orientation  = 'H';
+let gamePhase    = 'placement'; // placement | battle | over
+let currentShipIdx = 0;
+let shotsCount = 0;
+let enemySankCount = 0;
+let playerSankCount = 0;
+
+function initGrids() {
+  playerGrid = Array.from({length:10}, () => Array(10).fill(0));
+  enemyGrid  = Array.from({length:10}, () => Array(10).fill(0));
+  playerShots = []; enemyShots = [];
+  placedShips = {}; selectedShip = null; currentShipIdx = 0;
+  shotsCount = 0; enemySankCount = 0; playerSankCount = 0;
+  orientation = 'H';
+  gamePhase = 'placement';
+  // Place enemy ships randomly
+  for (const s of SHIPS) {
+    placeRandom(s.id, s.size, enemyGrid);
+  }
+}
+
+function placeRandom(id, size, grid) {
+  let placed = false;
+  while (!placed) {
+    const h = Math.random() > 0.5;
+    const r = Math.floor(Math.random() * (h ? 10 : 10-size+1));
+    const c = Math.floor(Math.random() * (h ? 10-size+1 : 10));
+    const cells = [];
+    let ok = true;
+    for (let i=0;i<size;i++) {
+      const rr = h ? r : r+i;
+      const cc = h ? c+i : c;
+      if (rr>=10||cc>=10||grid[rr][cc]!==0) { ok=false; break; }
+      cells.push([rr,cc]);
+    }
+    if (ok) { cells.forEach(([rr,cc])=>grid[rr][cc]=id); placed=true; }
+  }
+}
+
+function buildGridUI(containerId, grid, clickable, shots) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  for (let r=0;r<10;r++) {
+    for (let c=0;c<10;c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r; cell.dataset.c = c;
+      const shot = shots.find(s => s.r===r && s.c===c);
+      if (shot) {
+        cell.classList.add(shot.hit ? (shot.sunk?'sunk':'hit') : 'miss');
+        cell.textContent = shot.hit ? '💥' : '·';
+      } else if (containerId === 'player-grid' && grid[r][c] !== 0) {
+        cell.classList.add('ship-placed');
+        cell.textContent = '🚢';
+      } else {
+        cell.classList.add('water');
+        if (clickable) { cell.classList.add('enemy'); }
+      }
+      if (clickable && !shot) {
+        cell.addEventListener('click', () => fireAt(r, c));
+        cell.addEventListener('mouseenter', () => cell.style.fontSize='1.1rem');
+        cell.addEventListener('mouseleave', () => cell.style.fontSize='');
+      }
+      if (containerId === 'player-grid' && gamePhase==='placement') {
+        cell.addEventListener('click', () => placeship(r,c));
+        cell.addEventListener('mouseenter', () => hoverPlacement(r,c));
+        cell.addEventListener('mouseleave', () => clearHover());
+        cell.style.cursor = 'crosshair';
+      }
+      container.appendChild(cell);
+    }
+  }
+}
+
+function buildLabels() {
+  ['player','enemy'].forEach(side => {
+    const colEl = document.getElementById(side+'-col-labels');
+    const rowEl = document.getElementById(side+'-row-labels');
+    if (!colEl || !rowEl) return;
+    colEl.innerHTML = COLS.map(l=>`<div class="col-label">${l}</div>`).join('');
+    rowEl.innerHTML = ROWS.map(n=>`<div class="grid-label-cell">${n}</div>`).join('');
+  });
+}
+
+// ── PLACEMENT ──
+function buildShipList() {
+  const list = document.getElementById('ship-list');
+  list.innerHTML = SHIPS.map((s,i) => `
+    <div class="ship-item ${placedShips[s.id]?'placed':''} ${selectedShip===i?'selected':''}" id="si-${s.id}" onclick="selectShip(${i})">
+      <div class="ship-blocks">${Array(s.size).fill('<div class="ship-block"></div>').join('')}</div>
+      <div>
+        <div class="ship-name">${s.name}</div>
+        <div class="ship-size">${s.size} cases ${placedShips[s.id]?'✅':''}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function selectShip(idx) {
+  if (placedShips[SHIPS[idx].id]) return;
+  selectedShip = idx;
+  buildShipList();
+}
+
+function setOrient(o) {
+  orientation = o;
+  document.getElementById('btn-h').classList.toggle('active', o==='H');
+  document.getElementById('btn-v').classList.toggle('active', o==='V');
+}
+
+function getCells(r, c, size, orient) {
+  const cells = [];
+  for (let i=0;i<size;i++) {
+    const rr = orient==='H' ? r : r+i;
+    const cc = orient==='H' ? c+i : c;
+    cells.push([rr,cc]);
+  }
+  return cells;
+}
+
+function isValidPlacement(cells) {
+  return cells.every(([r,c]) => r>=0&&r<10&&c>=0&&c<10&&playerGrid[r][c]===0);
+}
+
+function hoverPlacement(r, c) {
+  if (selectedShip === null) return;
+  const s = SHIPS[selectedShip];
+  const cells = getCells(r, c, s.size, orientation);
+  const valid = isValidPlacement(cells);
+  clearHover();
+  cells.forEach(([rr,cc]) => {
+    if (rr<0||rr>=10||cc<0||cc>=10) return;
+    const el = document.getElementById('player-grid').children[rr*10+cc];
+    if (el) el.classList.add(valid ? 'placement-hover' : 'placement-invalid');
+  });
+}
+
+function clearHover() {
+  document.querySelectorAll('#player-grid .cell').forEach(el => {
+    el.classList.remove('placement-hover','placement-invalid');
+  });
+}
+
+function placeship(r, c) {
+  if (selectedShip === null) return;
+  const s = SHIPS[selectedShip];
+  const cells = getCells(r, c, s.size, orientation);
+  if (!isValidPlacement(cells)) return;
+  placedShips[s.id] = cells;
+  cells.forEach(([rr,cc]) => playerGrid[rr][cc] = s.id);
+  // Auto select next
+  const nextIdx = SHIPS.findIndex((ss,i) => i > selectedShip && !placedShips[ss.id]);
+  selectedShip = nextIdx === -1 ? null : nextIdx;
+  buildGridUI('player-grid', playerGrid, false, playerShots);
+  buildShipList();
+  const allPlaced = SHIPS.every(s => placedShips[s.id]);
+  document.getElementById('start-btn').disabled = !allPlaced;
+}
+
+function resetPlacement() {
+  playerGrid = Array.from({length:10},()=>Array(10).fill(0));
+  placedShips = {}; selectedShip = 0;
+  buildGridUI('player-grid', playerGrid, false, []);
+  buildShipList();
+  document.getElementById('start-btn').disabled = true;
+}
+
+// ── BATTLE ──
+function startGame() {
+  gamePhase = 'battle';
+  document.getElementById('setup-panel-wrap').style.display = 'none';
+  document.getElementById('enemy-panel-wrap').style.display = 'block';
+  document.getElementById('player-label').textContent = 'Votre flotte';
+  document.getElementById('status-text').textContent = '⚔️ À vous de jouer !';
+  buildGridUI('player-grid', playerGrid, false, enemyShots);
+  buildGridUI('enemy-grid', enemyGrid, true, playerShots);
+  buildLabels();
+  addLog('🎮 Partie lancée ! Tirez sur la grille ennemie.', 'info');
+}
+
+function fireAt(r, c) {
+  if (gamePhase !== 'battle') return;
+  if (playerShots.find(s=>s.r===r&&s.c===c)) return;
+  const hit = enemyGrid[r][c] !== 0;
+  const shipId = enemyGrid[r][c];
+  let sunk = false;
+  if (hit) {
+    // Vérifie si coulé
+    const ship = SHIPS.find(s=>s.id===shipId);
+    const allHits = playerShots.filter(s=>s.hit&&s.shipId===shipId).length + 1;
+    if (allHits >= ship.size) { sunk = true; enemySankCount++; }
+  }
+  playerShots.push({r,c,hit,sunk,shipId});
+  shotsCount++;
+  const coord = COLS[c]+(r+1);
+  if (sunk) {
+    addLog(`💥 ${coord} — COULÉ ! Le ${SHIPS.find(s=>s.id===shipId).name} est détruit !`, 'sunk');
+    if (enemySankCount === SHIPS.length) { endGame(true); return; }
+  } else if (hit) {
+    addLog(`🎯 ${coord} — TOUCHÉ !`, 'hit');
+  } else {
+    addLog(`💧 ${coord} — Manqué.`, 'miss');
+  }
+  buildGridUI('enemy-grid', enemyGrid, true, playerShots);
+  // Enemy fires
+  setTimeout(enemyFire, 600);
+}
+
+function enemyFire() {
+  if (gamePhase !== 'battle') return;
+  let r, c;
+  do { r=Math.floor(Math.random()*10); c=Math.floor(Math.random()*10); }
+  while (enemyShots.find(s=>s.r===r&&s.c===c));
+  const hit = playerGrid[r][c] !== 0;
+  const shipId = playerGrid[r][c];
+  let sunk = false;
+  if (hit) {
+    const ship = SHIPS.find(s=>s.id===shipId);
+    const allHits = enemyShots.filter(s=>s.hit&&s.shipId===shipId).length + 1;
+    if (allHits >= ship.size) { sunk = true; playerSankCount++; }
+  }
+  enemyShots.push({r,c,hit,sunk,shipId});
+  const coord = COLS[c]+(r+1);
+  if (sunk) {
+    addLog(`☠️ IA: ${coord} — votre ${SHIPS.find(s=>s.id===shipId).name} a été coulé !`, 'sunk');
+    if (playerSankCount === SHIPS.length) { endGame(false); return; }
+  } else if (hit) {
+    addLog(`⚠️ IA: ${coord} — votre navire est touché !`, 'hit');
+  }
+  buildGridUI('player-grid', playerGrid, false, enemyShots);
+}
+
+function endGame(playerWon) {
+  gamePhase = 'over';
+  document.getElementById('win-emoji').textContent = playerWon ? '🏆' : '💀';
+  document.getElementById('win-title').textContent = playerWon ? 'Victoire !' : 'Défaite...';
+  document.getElementById('win-sub').textContent = playerWon
+    ? `Vous avez coulé toute la flotte ennemie en ${shotsCount} tirs !`
+    : `L'IA a coulé toute votre flotte. Meilleure chance la prochaine fois !`;
+  document.getElementById('win-overlay').classList.add('open');
+}
+
+function restartGame() {
+  document.getElementById('win-overlay').classList.remove('open');
+  init();
+}
+
+function addLog(msg, type) {
+  const log = document.getElementById('game-log');
+  const el = document.createElement('div');
+  el.className = 'log-entry ' + type;
+  el.textContent = '> ' + msg;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+}
+
+function init() {
+  initGrids();
+  buildLabels();
+  buildGridUI('player-grid', playerGrid, false, []);
+  buildShipList();
+  document.getElementById('setup-panel-wrap').style.display = 'block';
+  document.getElementById('enemy-panel-wrap').style.display = 'none';
+  document.getElementById('player-label').textContent = 'Votre flotte — Placez vos navires';
+  document.getElementById('status-text').textContent = 'Phase de placement';
+  document.getElementById('start-btn').disabled = true;
+  // Build player col/row labels
+  const colEl = document.getElementById('player-col-labels');
+  const rowEl = document.getElementById('player-row-labels');
+  colEl.innerHTML = COLS.map(l=>`<div class="col-label">${l}</div>`).join('');
+  rowEl.innerHTML = ROWS.map(n=>`<div class="grid-label-cell">${n}</div>`).join('');
+}
+
+// ════════════════════════════════════════
+// EXERCICES
+// ════════════════════════════════════════
+function calcNotes() {
+  const vals = [1,2,3,4,5].map(i => parseFloat(document.getElementById('n'+i).value)).filter(v => !isNaN(v));
+  if (vals.length === 0) { document.getElementById('res-notes').textContent = 'Erreur : entrez au moins une note.'; return; }
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const moy = vals.reduce((a,b)=>a+b,0)/vals.length;
+  document.getElementById('res-notes').textContent =
+    `Notes saisies : [${vals.join(', ')}]\nMax     : ${max}\nMin     : ${min}\nTotal   : ${vals.reduce((a,b)=>a+b,0)}\nMoyenne : ${moy.toFixed(2)}`;
+}
+
+function calcMonnaie() {
+  const total = parseFloat(document.getElementById('total-prix').value);
+  const verse = parseFloat(document.getElementById('montant-verse').value);
+  if (isNaN(total)||isNaN(verse)) { document.getElementById('res-monnaie').textContent='Erreur : entrez des montants valides.'; return; }
+  if (verse < total) { document.getElementById('res-monnaie').textContent='Erreur : montant versé insuffisant.'; return; }
+  let reste = Math.round((verse - total)*100)/100;
+  let b50=0,b20=0,b10=0,b5=0,p2=0,p1=0,c50=0,c20=0,c10=0,c5=0,c2=0,c1=0;
+  const denom=[50,20,10,5,2,1,0.5,0.2,0.1,0.05,0.02,0.01];
+  const vars= [() => b50++,()=>b20++,()=>b10++,()=>b5++,()=>p2++,()=>p1++,()=>c50++,()=>c20++,()=>c10++,()=>c5++,()=>c2++,()=>c1++];
+  let r = Math.round(reste*100);
+  denom.forEach((d,i) => { const n=Math.floor(r/(d*100)); r=Math.round(r-n*d*100); vars[i](); vars[i]=null; for(let j=0;j<n-1;j++){if(vars[i])vars[i]();} });
+  // simple version
+  let r2 = Math.round(reste*100), out='';
+  [[5000,'50€'],[2000,'20€'],[1000,'10€'],[500,'5€'],[200,'2€'],[100,'1€'],[50,'50c'],[20,'20c'],[10,'10c'],[5,'5c'],[2,'2c'],[1,'1c']].forEach(([v,l])=>{
+    const n=Math.floor(r2/v); r2-=n*v; if(n>0) out+=`  ${l} × ${n}\n`;
+  });
+  document.getElementById('res-monnaie').textContent =
+    `Total     : ${total.toFixed(2)} €\nVersé     : ${verse.toFixed(2)} €\nÀ rendre  : ${reste.toFixed(2)} €\n\nRendu :\n${out}`;
+}
+
+function genMatrix() {
+  const n   = parseInt(document.getElementById('mat-size').value) || 4;
+  const max = parseInt(document.getElementById('mat-max').value) || 9;
+  const mat = Array.from({length:n},()=>Array.from({length:n},()=>Math.floor(Math.random()*(max+1))));
+  let out = `Matrice ${n}×${n} :\n`;
+  mat.forEach(row => { out += '[ ' + row.map(v=>String(v).padStart(2)).join('  ') + ' ]\n'; });
+  out += '------------';
+  document.getElementById('res-matrix').textContent = out;
+}
+
+// ── INIT ──
+init();
+</script>
+</body>
+</html>

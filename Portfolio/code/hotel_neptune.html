@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hôtel Neptune — ABBAOUI Wassim</title>
+    <link rel="stylesheet" href="hotel_neptune.css">
+    
+</head>
+<body>
+
+    <!-- HERO -->
+    <div class="projet-hero">
+        <h2>🌊 Hôtel Neptune</h2>
+        <p>Application web de réservation hôtelière — Projet 2ème année BTS SIO SLAM</p>
+        <div class="badges">
+            <span class="badge badge--php">PHP 8.2</span>
+            <span class="badge badge--mysql">MySQL 8.0</span>
+            <span class="badge badge--docker">Docker</span>
+            <span class="badge badge--html">HTML / CSS</span>
+            <span class="badge badge--apache">Apache</span>
+        </div>
+    </div>
+
+    <div class="projet-content">
+
+        <!-- DESCRIPTION -->
+        <div class="bloc">
+            <h3 class="bloc-title">Présentation du projet</h3>
+            <p class="description-text">
+                L'Hôtel Neptune est une application web complète de gestion de réservations hôtelières développée en PHP natif avec une base de données MySQL.
+                Le projet couvre l'intégralité du cycle : de la consultation des chambres par un client jusqu'à la validation par un administrateur, en passant par la génération automatique de factures.
+                L'environnement de développement est entièrement conteneurisé avec Docker (PHP/Apache + MySQL + phpMyAdmin).
+            </p>
+        </div>
+
+        <!-- FONCTIONNALITÉS -->
+        <div class="bloc">
+            <h3 class="bloc-title">Fonctionnalités</h3>
+            <div class="features-grid">
+                <div class="feature-bloc">
+                    <h4>👤 Espace client</h4>
+                    <ul>
+                        <li>Inscription et connexion sécurisée</li>
+                        <li>Consultation des chambres avec filtres (type, vue, prix, dates, équipements)</li>
+                        <li>Réservation en ligne avec calcul automatique du prix</li>
+                        <li>Suivi des réservations (mes réservations)</li>
+                        <li>Annulation d'une réservation</li>
+                    </ul>
+                </div>
+                <div class="feature-bloc gold">
+                    <h4>🛠 Espace administrateur</h4>
+                    <ul>
+                        <li>Tableau de bord avec statistiques</li>
+                        <li>Gestion des chambres (ajout, modification, suppression)</li>
+                        <li>Validation et annulation des réservations</li>
+                        <li>Facturation automatique (HT, TVA, TTC)</li>
+                        <li>Gestion des comptes utilisateurs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- STACK TECHNIQUE -->
+        <div class="bloc">
+            <h3 class="bloc-title">Stack technique</h3>
+            <div class="stack-grid">
+                <div class="stack-card">
+                    <div class="stack-icon">🐘</div>
+                    <h4>PHP 8.2</h4>
+                    <p>Backend, logique métier, sessions</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-icon">🗄️</div>
+                    <h4>MySQL 8.0</h4>
+                    <p>Base de données relationnelle</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-icon">🎨</div>
+                    <h4>HTML5 / CSS3</h4>
+                    <p>Interface responsive sans framework</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-icon">🐳</div>
+                    <h4>Docker</h4>
+                    <p>Conteneurisation (web + db + phpmyadmin)</p>
+                </div>
+                <div class="stack-card">
+                    <div class="stack-icon">🌐</div>
+                    <h4>Apache</h4>
+                    <p>Serveur web intégré au container</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BASE DE DONNÉES -->
+        <div class="bloc">
+            <h3 class="bloc-title">Base de données</h3>
+            <div class="table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Description</th>
+                            <th>Colonnes clés</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>users</strong></td>
+                            <td>Clients et administrateurs</td>
+                            <td>id, email, password, nom, prenom, role</td>
+                        </tr>
+                        <tr>
+                            <td><strong>room_types</strong></td>
+                            <td>Types de chambres (Standard, Suite…)</td>
+                            <td>id, nom, description, capacite, prix_nuit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>rooms</strong></td>
+                            <td>Chambres individuelles</td>
+                            <td>id, numero, type_id, etage, vue, wifi, minibar…</td>
+                        </tr>
+                        <tr>
+                            <td><strong>reservations</strong></td>
+                            <td>Réservations des clients</td>
+                            <td>id, user_id, room_id, date_arrivee, date_depart, statut, prix_total</td>
+                        </tr>
+                        <tr>
+                            <td><strong>invoices</strong></td>
+                            <td>Factures générées automatiquement</td>
+                            <td>id, reservation_id, montant_ht, tva, montant_ttc, statut</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- STRUCTURE -->
+        <div class="bloc">
+            <h3 class="bloc-title">Structure du projet</h3>
+            <div class="tree">
+<span class="folder">hotel_neptune/</span>
+├── <span class="file">docker-compose.yml</span>   <span class="comment"># Services PHP, MySQL, phpMyAdmin</span>
+├── <span class="file">Dockerfile</span>            <span class="comment"># Image PHP/Apache personnalisée</span>
+├── <span class="folder">sql/</span>
+│   └── <span class="file">init.sql</span>          <span class="comment"># Schéma + données de test</span>
+└── <span class="folder">src/</span>
+    ├── <span class="file">index.php</span>          <span class="comment"># Page d'accueil</span>
+    ├── <span class="file">rooms.php</span>          <span class="comment"># Liste + filtres des chambres</span>
+    ├── <span class="file">reservation.php</span>    <span class="comment"># Formulaire de réservation</span>
+    ├── <span class="file">my-reservations.php</span> <span class="comment"># Espace client</span>
+    ├── <span class="file">login.php / register.php</span>
+    ├── <span class="folder">includes/</span>          <span class="comment"># config.php, header, footer</span>
+    ├── <span class="folder">admin/</span>             <span class="comment"># Tableau de bord, CRUD, facturation</span>
+    └── <span class="folder">assets/css/</span>        <span class="comment"># style.css, admin.css</span>
+            </div>
+        </div>
+
+        <!-- LANCEMENT -->
+        <div class="bloc">
+            <h3 class="bloc-title">Lancer le projet</h3>
+            <div class="cmd-block">
+                <span class="comment"># 1. Cloner / extraire le projet</span><br>
+                cd hotel_neptune<br><br>
+                <span class="comment"># 2. Démarrer les conteneurs Docker</span><br>
+                docker-compose up -d<br><br>
+                <span class="comment"># Site web →</span> <span class="url">http://localhost:8080</span><br>
+                <span class="comment"># phpMyAdmin →</span> <span class="url">http://localhost:8081</span>
+            </div>
+        </div>
+
+
+    <!-- BOUTONS RETOUR -->
+    <div style="border-top: 1px solid #ddd; padding: 24px 32px; max-width: 900px; margin: 0 auto; display: flex; gap: 12px;">
+        <a href="portfolio.html#projets" class="btn-back btn-back--outline">← Retour aux projets</a>
+        <a href="projet/Présentation Projet Hôtel Neptune.pdf" class="btn-back btn-back--pdf">📄 Voir la présentation PDF</a>
+    </div>
+
+</body>
+</html>
